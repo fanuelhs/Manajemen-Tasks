@@ -2,15 +2,15 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Tasks extends CI_Controller {
-
     public function __construct() {
         parent::__construct();
-        $this->load->model('Mtask');
-        $this->load->model('Mcomment');
+        $this->load->model('Mtask'); 
+        $this->load->model('Mcomment'); 
+        $this->load->library('form_validation'); 
     }
 
  
-    public function create() { // Tambah task
+    public function create($data) { // Tambah task
         $data = [
             'user_id' => $this->input->post('user_id'),
             'title' => $this->input->post('title'),
@@ -38,31 +38,36 @@ class Tasks extends CI_Controller {
     }
 
     public function update($id) {
-    // Mendapatkan data dari form-data input
-    $data = $this->input->post(); // CodeIgniter akan otomatis menangani form-data
-
-    // Jika data kosong, kirim error
-    if (empty($data)) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Data tidak valid atau kosong. Pastikan data yang dikirim benar.'
-        ]);
-        return;
+        $data = array(
+            'user_id' => $this->input->input_stream('user_id'),
+            'title' => $this->input->input_stream('title'),
+            'description' => $this->input->input_stream('description'),
+            'status' => $this->input->input_stream('status')
+        );
+        
+        // Debug untuk memastikan data diterima
+        echo json_encode($data); 
+        
+        // Lanjutkan jika data lengkap
+        if (empty($data['user_id']) || empty($data['title']) || empty($data['description']) || empty($data['status'])) {
+            echo "Data tidak lengkap. Pastikan semua field diisi.";
+            return;
+        }
+    
+        // Coba lakukan update
+        if ($this->Mtask->update_task($id, $data)) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Task Berhasil Diperbarui.',
+                'data' => $data
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Gagal Untuk Memperbarui. Periksa log untuk detail lebih lanjut.'
+            ]);
+        }
     }
-
-    // Jika data valid, panggil metode update di model
-    try {
-        // Tambahkan logging untuk debug
-        log_message('debug', 'Data received for update: ' . print_r($data, true));
-        // Pastikan Anda mengirimkan ID dan data sebagai argumen
-        $this->Mtask->update_task($id, $data);
-        echo json_encode(['status' => 'success', 'message' => 'Task Berhasil Diperbarui']);
-    } catch (Exception $e) {
-        // Tambahkan logging untuk menangkap error
-        log_message('error', 'Update failed: ' . $e->getMessage());
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-    }
-}
 
 
     public function delete($id) { // Menghapus data task menggunakan task_id

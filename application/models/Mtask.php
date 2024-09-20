@@ -11,11 +11,16 @@ class Mtask extends CI_Model {
     }
 
     public function update_task($id, $data) {
-        // Pastikan data di array $data memiliki key yang sesuai dengan kolom di database
         $this->db->where('task_id', $id);
-        $this->db->update('tasks', $data); // pastikan $data adalah array berisi title, description, status, dll.
+        $this->db->update('tasks', $data);
+    
+        if ($this->db->affected_rows() > 0) {
+            return true; // Update berhasil
+        } else {
+            log_message('error', $this->db->last_query()); // Log query untuk debugging
+            return false; // Update gagal
+        }
     }
-
     public function delete($id) { //Menghapus data task menggunakan task_id
         $this->db->trans_start(); // Membuat transaksi agar berjalan bersamaan 
 
