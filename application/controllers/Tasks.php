@@ -10,7 +10,7 @@ class Tasks extends CI_Controller {
     }
 
  
-    public function create($data) { // Tambah task
+    public function create() { // Tambah task
         $data = [
             'user_id' => $this->input->post('user_id'),
             'title' => $this->input->post('title'),
