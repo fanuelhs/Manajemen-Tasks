@@ -7,30 +7,37 @@ class Users extends CI_Controller {
         parent::__construct();
         $this->load->model('Muser');
     }
-    public function create() { //Tambah users
+    public function create() {
         $data = [
             'username' => $this->input->post('username'), 
             'email' => $this->input->post('email'),
             'password' =>$this->input->post('password'),
         ];
-
-        if ($this->Muser->post($data)) { //Kondisi ketika user berhasil dibuat
-            $user_id = $this->db->insert_id();
-            $user = $this->Muser->get($user_id); 
-            $this->output->set_status_header(201)->set_content_type('application/json')->set_output(json_encode([
-                'message' => 'User Berhasil Dibuat',
-                'user' => $user
-            ]));
-        } else { //Kondisi ketika user gagal dibuat
-            $this->output->set_status_header(500)->set_output(json_encode(['message' => 'Maaf, Gagal Membuat User']));
+        if (strpos($data['email'], '@gmail.com') === false) { // Kondisi ketika tidak ada @gmail.com
+            echo json_encode([
+                'Status' => 'Error', 
+                'Message' => 'Email harus menggunakan domain @gmail.com']);
+            return;
         }
+        
+        $insert = $this->Muser->post($data);
+        if ($insert) { // Kondisi ketika user berhasil dibuat
+        echo json_encode([ 
+        'Status' => 'Success', 
+        'Message'=> 'User Berhasil Dibuat',
+        'Data' => $data]);
+        } else { // Kondisi ketika user gagal dibuat
+            echo json_encode([
+            'Status' => 'Error', 
+            'Message' => 'User Gagal Dibuat']);
     }
+}
     public function get($id) { // Dapat data menggunakan user_id
         $user = $this->Muser->get($id);
         if ($user) { // Kondisi ketika user ditemukan
-            $this->output->set_content_type('application/json')->set_output(json_encode($user));
+            $this->output->set_output(json_encode($user));
         } else { // Kondisi ketika user tidak ditemukan
-            $this->output->set_status_header(404)->set_output(json_encode(['message' => 'User Tidak Ditemukan']));
+            $this->output->set_output(json_encode(['Message' => 'User Tidak Ditemukan']));
         }
     }
 }

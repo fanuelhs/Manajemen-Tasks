@@ -2,36 +2,42 @@
 class Mtask extends CI_Model {
     
 
-    public function post($data) { //Membuat data task
-        return $this->db->insert('tasks', $data);
+    public function post($data) { 
+        if ($this->db->insert('tasks', $data)) {
+            return true;  
+        } else {
+            return false; 
+        }
     }
 
-    public function get($id) { //Mendapatkan data task menggunakan task_id
+    public function get($id) { 
         return $this->db->get_where('tasks', ['task_id' => $id])->row_array();
     }
 
-    public function update_task($id, $data) {
+    public function update($id, $data) {
         $this->db->where('task_id', $id);
         $this->db->update('tasks', $data);
     
         if ($this->db->affected_rows() > 0) {
-            return true; // Update berhasil
+            return true; 
         } else {
-            log_message('error', $this->db->last_query()); // Log query untuk debugging
-            return false; // Update gagal
+            return false; 
         }
     }
-    public function delete($id) { //Menghapus data task menggunakan task_id
-        $this->db->trans_start(); // Membuat transaksi agar berjalan bersamaan 
+    public function delete($id) { 
+        $this->db->trans_start(); 
 
-        // Menghapus comment menggunakan task_id
         $this->db->where('task_id', $id);
         $this->db->delete('comments');
 
-        // Menghapus comment menggunakan task_id
         $this->db->where('task_id', $id);
         $this->db->delete('tasks');
 
         $this->db->trans_complete();
+        if ($this->db->delete('tasks', $id)) {
+            return true;  
+        } else {
+            return false; 
+        }
     }
 }

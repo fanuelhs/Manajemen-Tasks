@@ -11,29 +11,40 @@ class Tasks extends CI_Controller {
 
  
     public function create() { // Tambah task
-        $data = [
+        $data = [ 
             'user_id' => $this->input->post('user_id'),
             'title' => $this->input->post('title'),
             'description' => $this->input->post('description'),
             'status' => $this->input->post('status')
         ];
+        $valid_status = ['done', 'on progress', 'pending'];
 
-        if ($this->Mtask->post($data)) { //Kondisi ketika task berhasil dibuat
-            $this->output->set_status_header(201)->set_content_type('application/json')->set_output(json_encode([
-                'message' => 'Task Berhasil Dibuat',
-                'task' => $data
-            ]));
-        } else { //Kondisi ketika task gagal dibuat
-            $this->output->set_status_header(500)->set_output(json_encode(['message' => 'Maaf, Gagal Membuat Task']));
+        if (!in_array($data['status'], $valid_status)) { //  Kondisi ketika pengisian input status tidak sesuai
+            echo json_encode([
+                'Status' => 'Error', 
+                'Message' => 'Status harus salah satu dari: done, on progress, atau pending']);
+            return;
         }
+
+        $insert = $this->Mtask->post($data);
+        if ($insert) { // Kondisi ketika task berhasil dibuat
+        echo json_encode([
+        'Status' => 'Success',
+        'Message'=> 'Task Berhasil Dibuat',
+        'Data' => $data]);
+    } else { // Kondisi ketika task gagal dibuat
+        echo json_encode([
+            'Status' => 'Error', 
+            'Message' => 'Task Gagal Dibuat']);
+    }
     }
 
     public function get($id) { // Dapat data menggunakan task_id
         $task = $this->Mtask->get($id);
         if ($task) { // Kondisi ketika task ditemukan
-            $this->output->set_content_type('application/json')->set_output(json_encode($task));
+            $this->output->set_output(json_encode($task));
         } else { // Kondisi ketika task tidak ditemukan
-            $this->output->set_status_header(404)->set_output(json_encode(['message' => 'Task Tidak Ditemukan']));
+            $this->output->set_output(json_encode(['Message' => 'Task Tidak Ditemukan']));
         }
     }
 
@@ -45,26 +56,25 @@ class Tasks extends CI_Controller {
             'status' => $this->input->input_stream('status')
         );
         
-        // Debug untuk memastikan data diterima
-        echo json_encode($data); 
-        
-        // Lanjutkan jika data lengkap
-        if (empty($data['user_id']) || empty($data['title']) || empty($data['description']) || empty($data['status'])) {
-            echo "Data tidak lengkap. Pastikan semua field diisi.";
+        $valid_status = ['done', 'on progress', 'pending'];
+
+        if (!in_array($data['status'], $valid_status)) { // Kondisi ketika pengisian input status tidak sesuai
+            echo json_encode([
+                'Status' => 'Error', 
+                'Message' => 'Status harus salah satu dari: done, on progress, atau pending']);
             return;
         }
-    
-        // Coba lakukan update
-        if ($this->Mtask->update_task($id, $data)) {
+        
+        if ($this->Mtask->update($id, $data)) { // Kondisi ketika berhasil meperbarui
             echo json_encode([
-                'status' => 'success',
-                'message' => 'Task Berhasil Diperbarui.',
-                'data' => $data
+                'Status' => 'success',
+                'Message' => 'Task Berhasil Diperbarui.',
+                'Data' => $data
             ]);
         } else {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Gagal Untuk Memperbarui. Periksa log untuk detail lebih lanjut.'
+            echo json_encode([ // Kondisi ketika gagal meperbarui
+                'Status' => 'error',
+                'Message' => 'Gagal Untuk Memperbarui'
             ]);
         }
     }
@@ -72,9 +82,9 @@ class Tasks extends CI_Controller {
 
     public function delete($id) { // Menghapus data task menggunakan task_id
         if ($this->Mtask->delete($id)) { // Kondisi ketika task dihapus
-            $this->output->set_content_type('application/json')->set_output(json_encode(['message' => 'Gagal Menghapus Task']));
+            $this->output->set_output(json_encode(['Message' => 'Task Berhasil Dihapus']));
         } else { //Kondisi ketika task gagal dihapus
-            $this->output->set_status_header(500)->set_output(json_encode(['message' => 'Task Berhasil Dihapus ']));
+            $this->output->set_output(json_encode(['Message' => 'Gagal Menghapus Task']));
         }
     }
         public function create_comment($task_id) { // Tambah comment
@@ -85,16 +95,16 @@ class Tasks extends CI_Controller {
         ];
 
         if ($this->Mcomment->post($data)) { // Kondisi ketika comment berhasil dibuat
-            $this->output->set_status_header(201)->set_content_type('application/json')->set_output(json_encode([
-                'message' => 'Comment Berhasil Ditambahkan',
-                'comment' => $data
+            $this->output->set_output(json_encode([
+                'Message' => 'Comment Berhasil Ditambahkan',
+                'Data' => $data
             ]));
         } else { // Kondisi ketika comment gagal dibuat
-            $this->output->set_status_header(500)->set_output(json_encode(['message' => 'Gagal Menambahkan Comment']));
+            $this->output->set_output(json_encode(['Message' => 'Gagal Menambahkan Comment']));
         }
     }
 
-    public function get_comments($task_id) {
+    public function get_comment($task_id) { // Mengambil semua comment dari task_id
         $comments = $this->Mcomment->get($task_id);
         echo json_encode($comments);
     }

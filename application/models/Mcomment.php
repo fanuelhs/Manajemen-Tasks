@@ -1,7 +1,7 @@
 <?php
 class Mcomment extends CI_Model {
 
-    public function post($data) { //Menambahkan comment pada task
+    public function post($data) { 
         return $this->db->insert('comments', $data);
     }
 
