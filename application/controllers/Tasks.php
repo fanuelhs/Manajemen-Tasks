@@ -172,9 +172,9 @@ class Tasks extends CI_Controller
                 ]));
             return;
         }
-        $this->form_validation->set_rules('comment', 'Comment', 'required|max_length[300]', [ // From validation
+        $this->form_validation->set_rules('comment', 'Comment', 'required|max_length[100]', [ // From validation
             'required' => 'Comment Harus Diisi',
-            'max_length' => 'Comment Tidak Boleh Lebih Dari 300 Karakter'
+            'max_length' => 'Comment Tidak Boleh Lebih Dari 100 Karakter'
         ]);
 
         if ($this->form_validation->run() == FALSE) { // Kondisi ketika validasi gagal
