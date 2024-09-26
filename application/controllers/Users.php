@@ -20,7 +20,7 @@ class Users extends CI_Controller
         ]);
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]', [
         'required' => 'Email Harus Diisi',
-        'valid_email' => 'Format Email tidak valid',
+        'valid_email' => 'Format Email Menggunakan Domain @gmail.com',
         'is_unique' => 'Email Sudah Digunakan'
         ]);
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[6]', [
