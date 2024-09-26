@@ -70,9 +70,14 @@ class Users extends CI_Controller
     { // Dapat data menggunakan user_id
         $user = $this->Muser->get($id);
         if ($user) { // Kondisi ketika user ditemukan
-            $this->output->set_content_type('application/json')->set_output(json_encode($user));
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'User Berhasil Ditemukan',
+                'Data' => $user
+            ]));
         } else { // Kondisi ketika user tidak ditemukan
             $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Error',
                 'Message' => 'User Tidak Ditemukan'
             ]));
         }

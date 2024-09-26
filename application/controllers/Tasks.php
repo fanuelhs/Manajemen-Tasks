@@ -77,9 +77,16 @@ class Tasks extends CI_Controller
     { // Dapat data menggunakan task_id
         $task = $this->Mtask->get($id);
         if ($task) { // Kondisi ketika task ditemukan
-            $this->output->set_output(json_encode($task));
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Task Berhasil Ditemukan',
+                'Data' => $task
+            ]));
         } else { // Kondisi ketika task tidak ditemukan
-            $this->output->set_output(json_encode(['Message' => 'Task Tidak Ditemukan']));
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Task Tidak Ditemukan'
+            ]));
         }
     }
 
@@ -156,9 +163,13 @@ class Tasks extends CI_Controller
         }
 
         if ($this->Mtask->delete($id)) { // Kondisi ketika task dihapus
-            $this->output->set_output(json_encode(['Message' => 'Task Berhasil Dihapus']));
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Task Berhasil Dihapus']));
         } else { //Kondisi ketika task gagal dihapus
-            $this->output->set_output(json_encode(['Message' => 'Gagal Menghapus Task']));
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Error',
+                'Message' => 'Gagal Menghapus Task']));
         }
     }
     public function create_comment($task_id)
@@ -194,12 +205,15 @@ class Tasks extends CI_Controller
         ];
 
         if ($this->Mcomment->post($data)) { // Kondisi ketika comment berhasil dibuat
-            $this->output->set_output(json_encode([
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
                 'Message' => 'Comment Berhasil Ditambahkan',
                 'Data' => $data
             ]));
         } else { // Kondisi ketika comment gagal dibuat
-            $this->output->set_output(json_encode(['Message' => 'Gagal Menambahkan Comment']));
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Error',
+                'Message' => 'Gagal Menambahkan Comment']));
         }
     }
 
@@ -217,10 +231,16 @@ class Tasks extends CI_Controller
         $comments = $this->Mcomment->get($task_id);
        if ($comments) { // Kondisi ketika task ditemukan
         $this->output->set_content_type('application/json')
-            ->set_output(json_encode($comments));
+            ->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Comment Berhasil Ditemukan',
+                'Data' => $comments
+            ]));
     } else { // Kondisi ketika task tidak ditemukan
         $this->output->set_content_type('application/json')
-            ->set_output(json_encode(['Message' => 'Comments Tidak Ditemukan pada Task ini']));
+            ->set_output(json_encode([
+                'Status' => 'Error',
+                'Message' => 'Comments Tidak Ditemukan']));
     }
     }
 }
