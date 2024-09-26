@@ -52,3 +52,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'dashboard';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['users'] = 'Users/create';
+$route['users/(:num)'] = 'Users/get/$1';
+$route['login'] = 'Users/login';
+$route['tasks'] = 'Tasks/create';
+$route['tasks/(:num)'] = 'Tasks/get/$1';
+$route['tasks/(:num)/put'] = 'Tasks/update/$1';
+$route['tasks/(:num)/delete'] = 'Tasks/delete/$1';
+$route['tasks/(:num)/comments'] = 'Tasks/create_comment/$1';
+$route['tasks/(:num)/comments-get'] = 'Tasks/get_comment/$1';
+
+
