@@ -18,5 +18,17 @@ class Muser extends CI_Model {
         $query = $this->db->get('users');
         return $query->row_array();
     }
+    
+    public function updateToken($userId, $token, $expiredToken) {
+        $this->db->where('user_id', $userId);
+        return $this->db->update('users', [
+            'token' => $token,
+            'expired_token' => $expiredToken
+        ]);
+    }
+    public function get_by_token($token) {
+        // Ambil data user berdasarkan token
+        return $this->db->get_where('users', ['token' => $token])->row_array();
+    }
 }
 
