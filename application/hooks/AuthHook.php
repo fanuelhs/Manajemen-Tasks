@@ -17,18 +17,15 @@ class AuthHook {
         $CI =& get_instance();
         $CI->load->model('Muser');
 
-        // Mengecualikan method login
-        $controller = $CI->router->class;  // Mendapatkan nama controller yang sedang berjalan
-        $method = $CI->router->method;     // Mendapatkan nama method yang sedang berjalan
-
-        // Cek apakah method saat ini adalah login, jika ya, abaikan autentikasi
-        if ($controller == 'Users' && ($method == 'login' || $method == 'create')) {
-            return;  // Jangan autentikasi pada fungsi login
+       
+        $controller = $CI->router->class;  
+        $method = $CI->router->method;     
+        if ($controller == 'Users' && ($method == 'login' || $method == 'create')) { // Kondisi ketika menggunakan method login dan create
+            return;  // Untuk mengabaikan authenticate 
         }
 
-        // Lanjutkan proses autentikasi untuk method lain
         $token = $CI->input->get_request_header('Authorization');
-        if (!$token) {
+        if (!$token) {// Kondisi ketika token tidak ada 
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
@@ -39,7 +36,7 @@ class AuthHook {
         }
 
         list($jwt) = sscanf($token, 'Bearer %s');
-        if (!$jwt) {
+        if (!$jwt) {  // Kondisi ketika token bukan JWT
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
@@ -49,9 +46,8 @@ class AuthHook {
             exit;
         }
 
-        // Ambil user berdasarkan token dari database
         $user = $CI->Muser->getToken($jwt);
-        if (!$user) {
+        if (!$user) {  // Kondisi ketika token tidak valid
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
@@ -61,8 +57,7 @@ class AuthHook {
             exit;
         }
 
-        // Periksa apakah token sudah kadaluarsa
-        if ($user['expired_token'] < date('Y-m-d H:i:s')) {
+        if ($user['expired_token'] < date('Y-m-d H:i:s')) { // Kondisi ketika token kadaluarsa
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
