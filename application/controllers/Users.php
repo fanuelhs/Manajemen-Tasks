@@ -95,49 +95,6 @@ class Users extends CI_Controller
             }
         }
     }
-    public function authenticate() {
-        $token = $this->input->get_request_header('Authorization');
-        if (!$token) { // Kondisi ketika token tidak ada
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Tidak Ditemukan'
-                ]));
-            return false;
-        }
-
-        list($jwt) = sscanf($token, 'Bearer %s');
-        if (!$jwt) { // Kondisi ketika token bukan JWT
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Tidak Valid'
-                ]));
-            return false;
-        }
-
-        $user = $this->Muser->getToken($jwt);
-        if (!$user) { // Kondisi ketika token tidak valid
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Tidak Valid'
-                ]));
-            return false;
-        }
-
-        if ($user['expired_token'] < date('Y-m-d H:i:s')) { // Kondisi ketika token kadaluarsa
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Kadaluarsa'
-                ]));
-            return false;
-        }
-
-        return true; 
-    }
-
 
     public function create()
     {
@@ -195,10 +152,6 @@ class Users extends CI_Controller
     }
     public function get($id)
     { 
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Dapat data menggunakan user_id
         $user = $this->Muser->get($id);
         if ($user) { // Kondisi ketika user ditemukan

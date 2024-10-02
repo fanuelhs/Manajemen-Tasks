@@ -11,55 +11,9 @@ class Tasks extends CI_Controller
         $this->load->model('Muser');
         $this->load->library('form_validation');
     }
-
-    public function authenticate() {
-        $token = $this->input->get_request_header('Authorization');
-        if (!$token) { // Kondisi ketika token tidak ada
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Tidak Ditemukan'
-                ]));
-            return false;
-        }
-
-        list($jwt) = sscanf($token, 'Bearer %s');
-        if (!$jwt) { // Kondisi ketika token bukan JWT
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Tidak Valid'
-                ]));
-            return false;
-        }
-
-        $user = $this->Muser->getToken($jwt);
-        if (!$user) { // Kondisi ketika token tidak valid
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Tidak Valid'
-                ]));
-            return false;
-        }
-
-        if ($user['expired_token'] < date('Y-m-d H:i:s')) { // Kondisi ketika token kadaluarsa
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Token Kadaluarsa'
-                ]));
-            return false;
-        }
-
-        return true; 
-    }
+    
     public function create()
     { 
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Tambah task
         $this->form_validation->set_rules('user_id', 'User ID', 'required|integer', [ // From validation
             'required' => 'User ID Harus Diisi',
@@ -121,10 +75,6 @@ class Tasks extends CI_Controller
 
     public function get($id)
     { 
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Dapat data menggunakan task_id
         $task = $this->Mtask->get($id);
         if ($task) { // Kondisi ketika task ditemukan
@@ -144,10 +94,6 @@ class Tasks extends CI_Controller
 
     public function update($id)
     {
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         $task = $this->Mtask->get($id);
 
         if (!$task) { // Kondisi ketika task tidak ditemukan
@@ -206,10 +152,6 @@ class Tasks extends CI_Controller
 
     public function delete($id)
     { 
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Menghapus data task menggunakan task_id
         $task = $this->Mtask->get($id);
 
@@ -234,10 +176,6 @@ class Tasks extends CI_Controller
     }
     public function create_comment($task_id)
     { 
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Tambah comment
         $task = $this->Mtask->get($task_id);
         if (!$task) { // Kondisi ketika task tidak ditemukan
@@ -284,10 +222,6 @@ class Tasks extends CI_Controller
 
     public function get_comment($task_id)
     { 
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Dapat comment menggunakan task_id
         $task = $this->Mtask->get($task_id);
         if (!$task) { // Kondisi ketika task tidak ditemukan
