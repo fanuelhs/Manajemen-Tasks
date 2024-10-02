@@ -141,10 +141,6 @@ class Users extends CI_Controller
 
     public function create()
     {
-        $token = $this->authenticate();
-        if (!$token) {
-            return; 
-        }
         // Tambah user
         $this->form_validation->set_rules('username', 'Username', 'required', [ // Form Validation
             'required' => 'Username Harus Diisi',
@@ -206,6 +202,7 @@ class Users extends CI_Controller
         // Dapat data menggunakan user_id
         $user = $this->Muser->get($id);
         if ($user) { // Kondisi ketika user ditemukan
+
             $this->output->set_content_type('application/json')->set_output(json_encode([
                 'Status' => 'Success',
                 'Message' => 'User Berhasil Ditemukan',
