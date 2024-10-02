@@ -26,7 +26,7 @@ class Muser extends CI_Model {
             'expired_token' => $expiredToken
         ]);
     }
-    public function get_by_token($token) {
+    public function getToken($token) {
         // Ambil data user berdasarkan token
         return $this->db->get_where('users', ['token' => $token])->row_array();
     }

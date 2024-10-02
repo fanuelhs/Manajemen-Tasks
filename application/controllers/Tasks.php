@@ -33,7 +33,7 @@ class Tasks extends CI_Controller
             return false;
         }
 
-        $user = $this->Muser->get_by_token($jwt);
+        $user = $this->Muser->getToken($jwt);
         if (!$user) { // Kondisi ketika token tidak valid
             $this->output->set_content_type('application/json')
                 ->set_output(json_encode([
