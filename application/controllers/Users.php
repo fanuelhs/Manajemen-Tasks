@@ -202,7 +202,7 @@ class Users extends CI_Controller
         // Dapat data menggunakan user_id
         $user = $this->Muser->get($id);
         if ($user) { // Kondisi ketika user ditemukan
-            $filteredData = [
+            $filter = [
                 'user_id' => $user['user_id'], 
                 'username' => $user['username'], 
                 'email' => $user['email'], 
@@ -213,7 +213,7 @@ class Users extends CI_Controller
             $this->output->set_content_type('application/json')->set_output(json_encode([
                 'Status' => 'Success',
                 'Message' => 'User Berhasil Ditemukan',
-                'Data' => $filteredData
+                'Data' => $filter
             ]));
         } else { // Kondisi ketika user tidak ditemukan
             $this->output->set_content_type('application/json')->set_output(json_encode([
