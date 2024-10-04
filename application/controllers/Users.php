@@ -15,6 +15,7 @@ class Users extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Muser');
+        $this->load->model('Mtoken');
     }
 
     public function login()
@@ -64,19 +65,21 @@ class Users extends CI_Controller
 
                     $jwt = JWT::encode($payload, $this->key, 'HS256');
 
-                    $expiredToken = date('Y-m-d H:i:s', time() + 3600);
-                    $this->Muser->updateToken($user['user_id'], $jwt, $expiredToken);
+                    $Data = [
+                        'user_id' => $user['user_id'],
+                        'token' => $jwt,
+                        'expired_token' => date('Y-m-d H:i:s', time() + 3600),
+                        'status' => 1, 
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                    $this->Mtoken->post($Data);
 
                     $this->output->set_content_type('application/json')
                         ->set_output(json_encode([
                             'Status' => 'Success',
                             'Message' => 'Login Berhasil',
-                            'UserData' => [
-                                'user_id' => $user['user_id'],
-                                'username' => $user['username'],
-                                'email' => $user['email'],
-                                'token' => $jwt,
-                            ]
+                            'UserData' => $Data
                         ]));
 
                 } else { // Kondisi ketika password salah
@@ -95,6 +98,70 @@ class Users extends CI_Controller
             }
         }
     }
+    public function logout()// Logout with token
+    {
+        $token = $this->input->get_request_header('Authorization');
+        list($jwt) = sscanf($token, 'Bearer %s');
+
+        if (!$jwt) {
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'Token Tidak Valid'
+                ]))
+                ->_display();
+            exit;
+        }
+
+        $tokenData = $this->Mtoken->getToken($jwt);
+        if ($tokenData) { // Kondisi ketika token ditemukan
+            $this->Mtoken->update($tokenData['user_id'], [
+                'status' => 0,
+                'token' => null,
+                'updated_at' => date('Y-m-d H:i:s'), 
+            ]);
+
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Logout Berhasil, Token Dihapus'
+                ]));
+        } else { // Kondisi ketika token tidak valid
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'Token Tidak Valid'
+                ]));
+        }
+    }
+
+    // public function logout() // Logout with user_id
+    // {
+    //     $userId = $this->input->post('user_id');
+
+    //     if (!$userId) {
+    //         $this->output->set_content_type('application/json')
+    //             ->set_output(json_encode([ // Kondisi ketika user_id tidak ditemukan
+    //                 'Status' => 'Error',
+    //                 'Message' => 'User ID Tidak Ditemukan'
+    //             ]))
+    //             ->_display();
+    //         exit;
+    //     }
+        
+    //     $this->Mtoken->update($userId, [
+    //         'status' => 0,
+    //         'token' => null,
+    //         'updated_at' => date('Y-m-d H:i:s'), 
+    //     ]);
+
+    //     $this->output->set_content_type('application/json')
+    //         ->set_output(json_encode([
+    //             'Status' => 'Success',
+    //             'Message' => 'Logout Berhasil, Token Dihapus'
+    //         ]));
+    // }
+
 
     public function create()
     {
@@ -173,6 +240,24 @@ class Users extends CI_Controller
                 'Status' => 'Error',
                 'Message' => 'User Tidak Ditemukan'
             ]));
+        }
+    }
+    public function getToken($userId) 
+    {
+        $token = $this->Mtoken->getTokenByUserId($userId);
+        if ($token) { // Kondisi ketika token ditemukan
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Token Berhasil Ditemukan',
+                    'Data' => $token
+                ]));
+        } else { // Kondisi ketika token tidak ditemukan
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'Token Tidak Ditemukan'
+                ]));
         }
     }
 }

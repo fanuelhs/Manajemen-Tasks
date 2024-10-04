@@ -15,12 +15,12 @@ class AuthHook {
     public function authenticate()
     {
         $CI =& get_instance();
-        $CI->load->model('Muser');
+        $CI->load->model('Mtoken');
 
        
         $controller = $CI->router->class;  
         $method = $CI->router->method;     
-        if ($controller == 'Users' && ($method == 'login' || $method == 'create')) { // Kondisi ketika menggunakan method login dan create
+        if ($controller == 'Users' && ($method == 'login' || $method == 'logout' || $method == 'getToken')) { // Kondisi ketika menggunakan method login dan create
             return;  // Untuk mengabaikan authenticate 
         }
 
@@ -29,7 +29,7 @@ class AuthHook {
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
-                    'Message' => 'Token Tidak Ditemukan'
+                    'Message' => 'Akses Ditolak'
                 ]))
                 ->_display();
             exit;
@@ -40,18 +40,18 @@ class AuthHook {
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
-                    'Message' => 'Token Tidak Valid'
+                    'Message' => 'Akses Ditolak'
                 ]))
                 ->_display();
             exit;
         }
 
-        $user = $CI->Muser->getToken($jwt);
+        $user = $CI->Mtoken->getToken($jwt);
         if (!$user) {  // Kondisi ketika token tidak valid
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
-                    'Message' => 'Token Tidak Valid'
+                    'Message' => 'Akses Ditolak'
                 ]))
                 ->_display();
             exit;
