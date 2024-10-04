@@ -105,10 +105,10 @@ class Tasks extends CI_Controller
             return;
         }
         $data = array(
-            'user_id' => $this->input->input_stream('user_id'),
-            'title' => $this->input->input_stream('title'),
-            'description' => $this->input->input_stream('description'),
-            'status' => $this->input->input_stream('status')
+            'user_id' => $this->input->post('user_id'),
+            'title' => $this->input->post('title'),
+            'description' => $this->input->post('description'),
+            'status' => $this->input->post('status')
         );
         $this->form_validation->set_data($data);
         $this->form_validation->set_rules('user_id', 'User ID', 'required|integer', [ // From validation
