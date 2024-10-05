@@ -124,7 +124,7 @@ class Users extends CI_Controller
             $this->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Success',
-                    'Message' => 'Logout Berhasil, Token Dihapus'
+                    'Message' => 'Logout Berhasil'
                 ]));
         } else { // Kondisi ketika token tidak valid
             $this->output->set_content_type('application/json')
