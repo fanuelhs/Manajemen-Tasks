@@ -22,5 +22,20 @@ class Mtoken extends CI_Model {
                         ->get_where('tokens', ['user_id' => $userId])
                         ->row_array(); 
     }
+    public function token_status() {
+
+        $this->db->where('expired_token <', date('Y-m-d H:i:s'));
+        $this->db->where('status', 1); 
+        $query = $this->db->get('tokens');
+
+        if ($query->num_rows() > 0) {
+            $expired_tokens = $query->result();
+
+            foreach ($expired_tokens as $token) {
+                $this->db->where('id', $token->id);
+                $this->db->update('tokens', array('status' => 0));
+            }
+        }
+    }
 }
 

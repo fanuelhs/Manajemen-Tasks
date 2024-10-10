@@ -13,6 +13,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 
 $hook['post_controller_constructor'][] = array(
+    'class'    => 'StatusTokenHook',
+    'function' => 'check_expired_tokens',
+    'filename' => 'StatusTokenHook.php',
+    'filepath' => 'hooks'
+);
+
+$hook['post_controller_constructor'][] = array(
     'class'    => 'AuthHook',
     'function' => 'authenticate',
     'filename' => 'AuthHook.php',
