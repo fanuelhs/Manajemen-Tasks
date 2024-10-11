@@ -55,7 +55,7 @@ class Users extends CI_Controller
                         "aud" => "localhost", 
                         "iat" => time(),      
                         "nbf" => time(),      
-                        "exp" => time() + 60, 
+                        "exp" => time() + 3600, 
                         "data" => array(
                             "user_id" => $user['user_id'],
                             "username" => $user['username'],
@@ -68,7 +68,7 @@ class Users extends CI_Controller
                     $Data = [
                         'user_id' => $user['user_id'],
                         'token' => $jwt,
-                        'expired_token' => date('Y-m-d H:i:s', time() + 60),
+                        'expired_token' => date('Y-m-d H:i:s', time() + 3600),
                         'status' => 1, 
                         'created_at' => date('Y-m-d H:i:s'),
                         'updated_at' => date('Y-m-d H:i:s')
