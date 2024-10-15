@@ -68,10 +68,11 @@ class Users extends CI_Controller
                     );
 
                     $jwt = JWT::encode($payload, $this->key, 'HS256');
+                    $token = substr($jwt, 0, 50);
 
                     $Data = [
                         'user_id' => $user['user_id'],
-                        'token' => $jwt,
+                        'token' => $token,
                         'expired_token' => date('Y-m-d H:i:s', time() + 3600),
                         'status' => 1,
                         'created_at' => date('Y-m-d H:i:s'),
