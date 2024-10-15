@@ -50,12 +50,16 @@ class Users extends CI_Controller
 
             if ($user) {
                 if ($password === $user['password']) { // Kondisi ketika password sesuai
+                    
+                    $this->session->set_userdata('user_id', $user['user_id']);
+                    $this->Mtoken->OldToken($user['user_id']);
+
                     $payload = array(
-                        "iss" => "localhost", 
-                        "aud" => "localhost", 
-                        "iat" => time(),      
-                        "nbf" => time(),      
-                        "exp" => time() + 3600, 
+                        "iss" => "localhost",
+                        "aud" => "localhost",
+                        "iat" => time(),
+                        "nbf" => time(),
+                        "exp" => time() + 3600,
                         "data" => array(
                             "user_id" => $user['user_id'],
                             "username" => $user['username'],
@@ -69,7 +73,7 @@ class Users extends CI_Controller
                         'user_id' => $user['user_id'],
                         'token' => $jwt,
                         'expired_token' => date('Y-m-d H:i:s', time() + 3600),
-                        'status' => 1, 
+                        'status' => 1,
                         'created_at' => date('Y-m-d H:i:s'),
                         'updated_at' => date('Y-m-d H:i:s')
                     ];
@@ -98,6 +102,33 @@ class Users extends CI_Controller
             }
         }
     }
+
+    public function logout()
+    {
+        $user_id = $this->session->userdata('user_id');
+
+        if ($user_id) {
+            $this->Mtoken->update($user_id, [
+                'status' => 0,
+                'updated_at' => date('Y-m-d H:i:s') 
+            ]);
+
+            $this->session->unset_userdata('user_id');
+
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Logout Berhasil'
+                ]));
+        } else {
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'Tidak ada sesi aktif untuk logout'
+                ]));
+        }
+    }
+
     // public function logout()// Logout with token
     // {
     //     $token = $this->input->get_request_header('Authorization');
@@ -134,29 +165,29 @@ class Users extends CI_Controller
     //     }
     // }
 
-    public function logout($userId = null) // Logout with user_id
-    {
-        if (!$userId) {
-            $this->output->set_content_type('application/json')
-                ->set_output(json_encode([ // Kondisi ketika user_id tidak ditemukan
-                    'Status' => 'Error',
-                    'Message' => 'User ID Tidak Ditemukan'
-                ]))
-                ->_display();
-            exit;
-        }
-        
-        $this->Mtoken->update($userId, [
-            'status' => 0,
-            'updated_at' => date('Y-m-d H:i:s'), 
-        ]);
+    // public function logout($userId = null) // Logout with user_id
+    // {
+    //     if (!$userId) {
+    //         $this->output->set_content_type('application/json')
+    //             ->set_output(json_encode([ // Kondisi ketika user_id tidak ditemukan
+    //                 'Status' => 'Error',
+    //                 'Message' => 'User ID Tidak Ditemukan'
+    //             ]))
+    //             ->_display();
+    //         exit;
+    //     }
 
-        $this->output->set_content_type('application/json')
-            ->set_output(json_encode([
-                'Status' => 'Success',
-                'Message' => 'Logout Berhasil'
-            ]));
-    }
+    //     $this->Mtoken->update($userId, [
+    //         'status' => 0,
+    //         'updated_at' => date('Y-m-d H:i:s'), 
+    //     ]);
+
+    //     $this->output->set_content_type('application/json')
+    //         ->set_output(json_encode([
+    //             'Status' => 'Success',
+    //             'Message' => 'Logout Berhasil'
+    //         ]));
+    // }
 
 
     public function create()
@@ -166,9 +197,9 @@ class Users extends CI_Controller
             'required' => 'Username Harus Diisi',
         ]);
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]', [
-        'required' => 'Email Harus Diisi',
-        'valid_email' => 'Format Email Menggunakan Domain @gmail.com',
-        'is_unique' => 'Email Sudah Digunakan'
+            'required' => 'Email Harus Diisi',
+            'valid_email' => 'Format Email Menggunakan Domain @gmail.com',
+            'is_unique' => 'Email Sudah Digunakan'
         ]);
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[6]', [
             'required' => 'Password Harus Diisi',
@@ -214,16 +245,16 @@ class Users extends CI_Controller
         }
     }
     public function get($id)
-    { 
+    {
         // Dapat data menggunakan user_id
         $user = $this->Muser->get($id);
         if ($user) { // Kondisi ketika user ditemukan
             $filter = [
-                'user_id' => $user['user_id'], 
-                'username' => $user['username'], 
-                'email' => $user['email'], 
-                'password' => $user['password'], 
-                'created_at' => $user['created_at'] 
+                'user_id' => $user['user_id'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'password' => $user['password'],
+                'created_at' => $user['created_at']
             ];
 
             $this->output->set_content_type('application/json')->set_output(json_encode([
@@ -238,7 +269,7 @@ class Users extends CI_Controller
             ]));
         }
     }
-    public function getToken($userId) 
+    public function getToken($userId)
     {
         $token = $this->Mtoken->getTokenByUserId($userId);
         if ($token) { // Kondisi ketika token ditemukan

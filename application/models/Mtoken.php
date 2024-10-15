@@ -1,6 +1,15 @@
 <?php
 
-class Mtoken extends CI_Model {
+class Mtoken extends CI_Model
+{
+    public function OldToken($user_id)
+    {
+        $this->db->where('user_id', $user_id);
+        $this->db->update('tokens', [
+            'status' => 0,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+    }
 
     public function post($data)
     {
@@ -13,19 +22,22 @@ class Mtoken extends CI_Model {
         return $this->db->update('tokens', $data);
     }
 
-    public function getToken($token) {
+    public function getToken($token)
+    {
         return $this->db->get_where('tokens', ['token' => $token])->row_array();
     }
 
-    public function getTokenByUserId($userId) {
-        return $this->db->order_by('created_at', 'DESC') 
-                        ->get_where('tokens', ['user_id' => $userId])
-                        ->row_array(); 
+    public function getTokenByUserId($userId)
+    {
+        return $this->db->order_by('created_at', 'DESC')
+            ->get_where('tokens', ['user_id' => $userId])
+            ->row_array();
     }
-    public function token_status() {
+    public function token_status()
+    {
 
         $this->db->where('expired_token <', date('Y-m-d H:i:s'));
-        $this->db->where('status', 1); 
+        $this->db->where('status', 1);
         $query = $this->db->get('tokens');
 
         if ($query->num_rows() > 0) {

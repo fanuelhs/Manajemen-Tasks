@@ -61,7 +61,7 @@ class AuthHook {
             $CI->output->set_content_type('application/json')
                 ->set_output(json_encode([
                     'Status' => 'Error',
-                    'Message' => 'Token Kadaluarsa'
+                    'Message' => 'Akses Ditolak'
                 ]))
                 ->_display();
             exit;
