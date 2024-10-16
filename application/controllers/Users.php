@@ -68,7 +68,7 @@ class Users extends CI_Controller
                     );
 
                     $jwt = JWT::encode($payload, $this->key, 'HS256');
-                    $token = substr($jwt, 0, 50);
+                    $token = substr(hash('sha256', $jwt), 0, 50);
 
                     $Data = [
                         'user_id' => $user['user_id'],
