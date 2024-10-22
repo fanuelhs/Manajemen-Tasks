@@ -10,11 +10,11 @@ class Mtask extends CI_Model {
         }
     }
 
-    // public function get($id) { 
-    //     return $this->db->get_where('tasks', ['task_id' => $id])->row_array();
-    // }
+    public function get($id) { 
+        return $this->db->get_where('tasks', ['task_id' => $id])->row_array();
+    }
 
-    public function get($filters = [])
+    public function getFilter($filters = [])
     {
         $this->db->select('*');
         $this->db->from('tasks');

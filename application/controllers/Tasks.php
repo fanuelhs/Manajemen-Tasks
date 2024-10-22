@@ -164,7 +164,7 @@ class Tasks extends CI_Controller
             'created_at' => $this->input->get('created_at')
         ];
 
-        $tasks = $this->Mtask->get($filters);
+        $tasks = $this->Mtask->getFilter($filters);
 
         if ($tasks) {
             foreach ($tasks as &$task) { // Kondisi deadline 
@@ -186,7 +186,7 @@ class Tasks extends CI_Controller
                     'user_id' => $task['user_id'],
                     'title' => $task['title'],
                     'description' => $task['description'],
-                    'status_task' => $task['status'], // Gunakan 'status_task' jika ingin mengubah namanya
+                    'status_task' => $task['status'], 
                     'deadline_status' => $task['deadline_status'],
                     'created_at' => $task['created_at'],
                     'updated_at' => $task['updated_at']
