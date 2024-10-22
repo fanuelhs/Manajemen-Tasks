@@ -69,7 +69,7 @@ class Tasks extends CI_Controller
                             'user_id' => $data['user_id'],
                             'title' => $data['title'],
                             'description' => $data['description'],
-                            'status_task' => $data['status'], 
+                            'status_task' => $data['status'],
                             'deadline' => $data['deadline']
                         ]
                     ]));
@@ -179,9 +179,9 @@ class Tasks extends CI_Controller
                     $task['deadline_status'] = 'Telat';
                 }
 
-                 unset($task['deadline']);
+                unset($task['deadline']);
 
-                 $tasks_json[] = [
+                $tasks_json[] = [
                     'task_id' => $task['task_id'],
                     'user_id' => $task['user_id'],
                     'title' => $task['title'],
@@ -259,7 +259,13 @@ class Tasks extends CI_Controller
                 ->set_output(json_encode([
                     'Status' => 'Success',
                     'Message' => 'Task Berhasil Diperbarui.',
-                    'Data' => $data
+                    'Data' => [
+                        'user_id' => $data['user_id'],
+                        'title' => $data['title'],
+                        'description' => $data['description'],
+                        'status_task' => $data['status'],
+                        'deadline' => $data['deadline']
+                    ]
                 ]));
         } else {
             $this->output->set_content_type('application/json')
