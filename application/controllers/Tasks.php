@@ -65,7 +65,13 @@ class Tasks extends CI_Controller
                     ->set_output(json_encode([
                         'Status' => 'Success',
                         'Message' => 'Task Berhasil Dibuat',
-                        'Data' => $data
+                        'Data' => [
+                            'user_id' => $data['user_id'],
+                            'title' => $data['title'],
+                            'description' => $data['description'],
+                            'status_task' => $data['status'], 
+                            'deadline' => $data['deadline']
+                        ]
                     ]));
             } else { // Kondisi ketika task gagal dibuat
                 $this->output->set_content_type('application/json')
@@ -173,21 +179,24 @@ class Tasks extends CI_Controller
                     $task['deadline_status'] = 'Telat';
                 }
 
-                unset($task['deadline']);
+                 unset($task['deadline']);
 
-                $deadline_status = $task['deadline_status'];
-                unset($task['deadline_status']);
-                $task = array_merge( // Menggabungkan deadline_status ke dalam data task antara status dan deadline
-                    array_slice($task, 0, array_search('status', array_keys($task)) + 1),
-                    ['deadline_status' => $deadline_status],
-                    array_slice($task, array_search('status', array_keys($task)) + 1)
-                );
+                 $tasks_json[] = [
+                    'task_id' => $task['task_id'],
+                    'user_id' => $task['user_id'],
+                    'title' => $task['title'],
+                    'description' => $task['description'],
+                    'status_task' => $task['status'], // Gunakan 'status_task' jika ingin mengubah namanya
+                    'deadline_status' => $task['deadline_status'],
+                    'created_at' => $task['created_at'],
+                    'updated_at' => $task['updated_at']
+                ];
             }
 
             $this->output->set_content_type('application/json')->set_output(json_encode([
                 'Status' => 'Success',
                 'Message' => 'Tasks Berhasil Ditemukan',
-                'Data' => $tasks
+                'Data' => $tasks_json
             ]));
         } else {
             $this->output->set_content_type('application/json')->set_output(json_encode([
