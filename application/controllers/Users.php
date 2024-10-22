@@ -50,7 +50,7 @@ class Users extends CI_Controller
 
             if ($user) {
                 if ($password === $user['password']) { // Kondisi ketika password sesuai
-                    
+
                     $this->session->set_userdata('user_id', $user['user_id']);
                     $this->Mtoken->OldToken($user['user_id']);
 
@@ -111,7 +111,7 @@ class Users extends CI_Controller
         if ($user_id) {
             $this->Mtoken->update($user_id, [
                 'status' => 0,
-                'updated_at' => date('Y-m-d H:i:s') 
+                'updated_at' => date('Y-m-d H:i:s')
             ]);
 
             $this->session->unset_userdata('user_id');
@@ -194,7 +194,13 @@ class Users extends CI_Controller
     public function create()
     {
         // Tambah user
-        $this->form_validation->set_rules('username', 'Username', 'required', [ // Form Validation
+        $this->form_validation->set_rules('firstname', 'Firstname', 'required', [ // Form Validation
+            'required' => 'Firstname Harus Diisi',
+        ]);
+        $this->form_validation->set_rules('lastname', 'Lastname', 'required', [
+            'required' => 'Lastname Harus Diisi',
+        ]);
+        $this->form_validation->set_rules('username', 'Username', 'required', [
             'required' => 'Username Harus Diisi',
         ]);
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]', [
@@ -215,6 +221,8 @@ class Users extends CI_Controller
                 ]));
         } else {
             $data = [
+                'firstname' => $this->input->post('firstname'),
+                'lastname' => $this->input->post('lastname'),
                 'username' => $this->input->post('username'),
                 'email' => $this->input->post('email'),
                 'password' => $this->input->post('password'),
@@ -245,28 +253,64 @@ class Users extends CI_Controller
             }
         }
     }
-    public function get($id)
+    // public function get($id)
+    // {
+    //     // Dapat data menggunakan user_id
+    //     $user = $this->Muser->get($id);
+    //     if ($user) { // Kondisi ketika user ditemukan
+    //         $filter = [
+    //             'user_id' => $user['user_id'],
+    //             'username' => $user['username'],
+    //             'email' => $user['email'],
+    //             'password' => $user['password'],
+    //             'created_at' => $user['created_at']
+    //         ];
+
+    //         $this->output->set_content_type('application/json')->set_output(json_encode([
+    //             'Status' => 'Success',
+    //             'Message' => 'User Berhasil Ditemukan',
+    //             'Data' => $user
+    //         ]));
+    //     } else { // Kondisi ketika user tidak ditemukan
+    //         $this->output->set_content_type('application/json')->set_output(json_encode([
+    //             'Status' => 'Error',
+    //             'Message' => 'User Tidak Ditemukan'
+    //         ]));
+    //     }
+    // }
+    public function get()
     {
-        // Dapat data menggunakan user_id
-        $user = $this->Muser->get($id);
-        if ($user) { // Kondisi ketika user ditemukan
-            $filter = [
+        // Ambil parameter dari input (bisa dari query string atau POST)
+        $filter = [
+            'email' => $this->input->get('email'),      
+            'username' => $this->input->get('username'),
+            'name' => $this->input->get('name')         
+        ];
+
+        $users = $this->Muser->getFilter($filter);
+        foreach ($users as &$user) {
+            $user = [
                 'user_id' => $user['user_id'],
+                'name' => $user['firstname'] . ' ' . $user['lastname'],
                 'username' => $user['username'],
                 'email' => $user['email'],
                 'password' => $user['password'],
                 'created_at' => $user['created_at']
             ];
+            unset($user['firstname']); // Menghapus field firstname 
+            unset($user['lastname']);  // Menghapus field lastname 
+        }
 
+        if (!empty($users)) {
             $this->output->set_content_type('application/json')->set_output(json_encode([
                 'Status' => 'Success',
-                'Message' => 'User Berhasil Ditemukan',
-                'Data' => $filter
+                'Message' => 'Users Berhasil Ditemukan',
+                'Data' => $users
             ]));
-        } else { // Kondisi ketika user tidak ditemukan
+        } else {
             $this->output->set_content_type('application/json')->set_output(json_encode([
                 'Status' => 'Error',
-                'Message' => 'User Tidak Ditemukan'
+                'Message' => 'Users Tidak Ditemukan'
             ]));
         }
     }
@@ -286,6 +330,36 @@ class Users extends CI_Controller
                     'Status' => 'Error',
                     'Message' => 'Token Tidak Ditemukan'
                 ]));
+        }
+    }
+    public function getParamUserId()
+    {
+        // Dapat data menggunakan user_id
+        $user_id = $this->input->get('user_id');
+        if ($user_id) {
+            // Dapatkan data user berdasarkan user_id
+            $user = $this->Muser->get($user_id);
+            if ($user) { // Kondisi ketika user ditemukan
+                $filter = [
+                    'user_id' => $user['user_id'],
+                    'name' => $user['firstname'] . ' ' . $user['lastname'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'password' => $user['password'],
+                    'created_at' => $user['created_at']
+                ];
+
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'User Berhasil Ditemukan',
+                    'Data' => $filter
+                ]));
+            } else { // Kondisi ketika user tidak ditemukan
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'User Tidak Ditemukan'
+                ]));
+            }
         }
     }
 }
