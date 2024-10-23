@@ -186,7 +186,7 @@ class Tasks extends CI_Controller
                     'user_id' => $task['user_id'],
                     'title' => $task['title'],
                     'description' => $task['description'],
-                    'status_task' => $task['status'], 
+                    'status_task' => $task['status'],
                     'deadline_status' => $task['deadline_status'],
                     'created_at' => $task['created_at'],
                     'updated_at' => $task['updated_at']
@@ -388,10 +388,23 @@ class Tasks extends CI_Controller
 
         $comments = $this->Mcomment->get($filters);
         if (!empty($comments)) {
+            $comment = [];
+            foreach ($comments as $comment) {
+                $comment_json[] = [
+                    'comment_id' => $comment['comment_id'],
+                    'task_id' => $comment['task_id'],
+                    'user_id' => $comment['user_id'],
+                    'name' => $comment['name'],
+                    'username' => $comment['username'],
+                    'comment' => $comment['comment'],
+                    'created_at' => $comment['created_at']
+                ];
+            }
+
             $this->output->set_content_type('application/json')->set_output(json_encode([
                 'Status' => 'Success',
                 'Message' => 'Comments Berhasil Ditemukan',
-                'Data' => $comments
+                'Data' => $comment_json
             ]));
         } else {
             $this->output->set_content_type('application/json')->set_output(json_encode([
