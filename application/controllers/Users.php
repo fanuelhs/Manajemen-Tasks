@@ -194,11 +194,13 @@ class Users extends CI_Controller
     public function create()
     {
         // Tambah user
-        $this->form_validation->set_rules('firstname', 'Firstname', 'required', [ // Form Validation
+        $this->form_validation->set_rules('firstname', 'Firstname', 'required|regex_match[/^[A-Z][a-zA-Z]*(\s[A-Z][a-zA-Z]*)*$/]', [ // Form Validation
             'required' => 'Firstname Harus Diisi',
+            'regex_match' => 'Firstname Awalan Nama Harus Menggunakan Huruf Besar dan Tidak Boleh Mengandung Angka'
         ]);
-        $this->form_validation->set_rules('lastname', 'Lastname', 'required', [
+        $this->form_validation->set_rules('lastname', 'Lastname', 'required|regex_match[/^[A-Z][a-zA-Z]*(\s[A-Z][a-zA-Z]*)*$/]', [
             'required' => 'Lastname Harus Diisi',
+            'regex_match' => 'Lastname Awalan Nama Harus Menggunakan Huruf Besar dan Tidak Boleh Mengandung Angka'
         ]);
         $this->form_validation->set_rules('username', 'Username', 'required', [
             'required' => 'Username Harus Diisi',
@@ -280,7 +282,7 @@ class Users extends CI_Controller
     // }
     public function get()
     {
-        // Ambil parameter dari input (bisa dari query string atau POST)
+        // Parameter
         $filter = [
             'email' => $this->input->get('email'),      
             'username' => $this->input->get('username'),
@@ -334,12 +336,11 @@ class Users extends CI_Controller
     }
     public function getParamUserId()
     {
-        // Dapat data menggunakan user_id
+        // Parameter
         $user_id = $this->input->get('user_id');
         if ($user_id) {
-            // Dapatkan data user berdasarkan user_id
             $user = $this->Muser->get($user_id);
-            if ($user) { // Kondisi ketika user ditemukan
+            if ($user) { // Kondisi ketika user_id ditemukan
                 $filter = [
                     'user_id' => $user['user_id'],
                     'name' => $user['firstname'] . ' ' . $user['lastname'],

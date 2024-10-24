@@ -155,6 +155,7 @@ class Tasks extends CI_Controller
 
     public function get()
     {
+        // Parameter
         $filters = [
             'title' => $this->input->get('title'),
             'description' => $this->input->get('description'),
@@ -179,7 +180,7 @@ class Tasks extends CI_Controller
                     $task['deadline_status'] = 'Telat';
                 }
 
-                unset($task['deadline']);
+                unset($task['deadline']); // Menghapus field deadline
 
                 $tasks_json[] = [
                     'task_id' => $task['task_id'],
@@ -205,8 +206,6 @@ class Tasks extends CI_Controller
             ]));
         }
     }
-
-
 
     public function update($id)
     {
@@ -275,7 +274,6 @@ class Tasks extends CI_Controller
                 ]));
         }
     }
-
 
     public function delete($id)
     {
@@ -379,6 +377,7 @@ class Tasks extends CI_Controller
     // }
     public function get_comment()
     {
+        // Parameter
         $filters = [
             'user_id' => $this->input->get('user_id'),
             'username' => $this->input->get('username'),
