@@ -13,6 +13,9 @@ class Mtask extends CI_Model {
     public function get($id) { 
         return $this->db->get_where('tasks', ['task_id' => $id])->row_array();
     }
+    public function getUserid($id) { 
+        return $this->db->get_where('tasks', ['user_id' => $id])->result_array();
+    }
 
     public function getFilter($filters = [])
     {

@@ -180,7 +180,7 @@ class Tasks extends CI_Controller
                     $task['deadline_status'] = 'Telat';
                 }
 
-                unset($task['deadline']); // Menghapus field deadline
+                // unset($task['deadline']); // Menghapus field deadline
 
                 $tasks_json[] = [
                     'task_id' => $task['task_id'],
@@ -188,6 +188,7 @@ class Tasks extends CI_Controller
                     'title' => $task['title'],
                     'description' => $task['description'],
                     'status_task' => $task['status'],
+                    'deadline' => $task['deadline'],
                     'deadline_status' => $task['deadline_status'],
                     'created_at' => $task['created_at'],
                     'updated_at' => $task['updated_at']
@@ -204,6 +205,53 @@ class Tasks extends CI_Controller
                 'Status' => 'Success',
                 'Message' => 'Tasks Tidak Ditemukan'
             ]));
+        }
+    }
+
+    public function getParamUserId()
+    {
+        // Parameter
+        $user_id = $this->input->get('user_id');
+        if ($user_id) {
+            $user = $this->Mtask->getUserid($user_id);
+            if ($user) { // Kondisi ketika user_id ditemukan
+                $filter = [];
+                foreach ($user as $users) {
+                    $today = date('Y-m-d');
+                    $deadline = $users['deadline'];
+
+                    if ($today < $deadline) {
+                        $users['deadline_status'] = 'Tepat Waktu';
+                    } elseif ($today == $deadline) {
+                        $users['deadline_status'] = 'Hari Deadline';
+                    } else {
+                        $users['deadline_status'] = 'Telat';
+                    }
+                    
+                    $filter[] = [
+                        'task_id' => $users['task_id'],
+                        'user_id' => $users['user_id'],
+                        'title' => $users['title'],
+                        'description' => $users['description'],
+                        'status_task' => $users['status'],
+                        'deadline' => $users['deadline'],
+                        'deadline_status' => $users['deadline_status'],
+                        'created_at' => $users['created_at'],
+                        'updated_at' => $users['updated_at']
+                    ];
+                }
+
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Task Berhasil Ditemukan',
+                    'Data' => $filter
+                ]));
+            } else { // Kondisi ketika user tidak ditemukan
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'Task Tidak Ditemukan'
+                ]));
+            }
         }
     }
 

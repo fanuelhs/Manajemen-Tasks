@@ -334,34 +334,34 @@ class Users extends CI_Controller
                 ]));
         }
     }
-    public function getParamUserId()
-    {
-        // Parameter
-        $user_id = $this->input->get('user_id');
-        if ($user_id) {
-            $user = $this->Muser->get($user_id);
-            if ($user) { // Kondisi ketika user_id ditemukan
-                $filter = [
-                    'user_id' => $user['user_id'],
-                    'name' => $user['firstname'] . ' ' . $user['lastname'],
-                    'username' => $user['username'],
-                    'email' => $user['email'],
-                    'password' => $user['password'],
-                    'created_at' => $user['created_at']
-                ];
+    // public function getParamUserId()// Get Params User_id
+    // {
+    //     // Parameter
+    //     $user_id = $this->input->get('user_id');
+    //     if ($user_id) {
+    //         $user = $this->Muser->get($user_id);
+    //         if ($user) { // Kondisi ketika user_id ditemukan
+    //             $filter = [
+    //                 'user_id' => $user['user_id'],
+    //                 'name' => $user['firstname'] . ' ' . $user['lastname'],
+    //                 'username' => $user['username'],
+    //                 'email' => $user['email'],
+    //                 'password' => $user['password'],
+    //                 'created_at' => $user['created_at']
+    //             ];
 
-                $this->output->set_content_type('application/json')->set_output(json_encode([
-                    'Status' => 'Success',
-                    'Message' => 'User Berhasil Ditemukan',
-                    'Data' => $filter
-                ]));
-            } else { // Kondisi ketika user tidak ditemukan
-                $this->output->set_content_type('application/json')->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'User Tidak Ditemukan'
-                ]));
-            }
-        }
-    }
+    //             $this->output->set_content_type('application/json')->set_output(json_encode([
+    //                 'Status' => 'Success',
+    //                 'Message' => 'User Berhasil Ditemukan',
+    //                 'Data' => $filter
+    //             ]));
+    //         } else { // Kondisi ketika user tidak ditemukan
+    //             $this->output->set_content_type('application/json')->set_output(json_encode([
+    //                 'Status' => 'Error',
+    //                 'Message' => 'User Tidak Ditemukan'
+    //             ]));
+    //         }
+    //     }
+    // }
 }
 

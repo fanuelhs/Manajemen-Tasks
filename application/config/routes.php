@@ -61,6 +61,7 @@ $route['logout'] = 'Users/logout';
 $route['token/(:num)'] = 'Users/getToken/$1';
 $route['tasks'] = 'Tasks/create';
 $route['tasksget'] = 'Tasks/get';
+$route['tasksgets'] = 'Tasks/getParamUserId';
 $route['tasks/(:num)/put'] = 'Tasks/update/$1';
 $route['tasks/(:num)/delete'] = 'Tasks/delete/$1';
 $route['tasks/(:num)/comments'] = 'Tasks/create_comment/$1';
