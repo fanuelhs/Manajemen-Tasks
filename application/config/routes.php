@@ -52,19 +52,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'dashboard';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
-
+//User
 $route['users'] = 'Users/create';
-$route['usersgets'] = 'Users/get';
-$route['usersget'] = 'Users/getParamUserId';
+$route['usersget/(:num)'] = 'Users/get/$1';
+$route['usersgets'] = 'Users/getFilter';
 $route['login'] = 'Users/login';
 $route['logout'] = 'Users/logout';
 $route['token/(:num)'] = 'Users/getToken/$1';
+// Task
 $route['tasks'] = 'Tasks/create';
-$route['tasksget'] = 'Tasks/get';
-$route['tasksgets'] = 'Tasks/getParamUserId';
+$route['tasksget/(:num)'] = 'Tasks/get/$1';
+$route['tasksgets/(:num)'] = 'Tasks/getFilter/$1';
+$route['tasksgetsall'] = 'Tasks/getAllFilter';
 $route['tasks/(:num)/put'] = 'Tasks/update/$1';
 $route['tasks/(:num)/delete'] = 'Tasks/delete/$1';
+// Comment
 $route['tasks/(:num)/comments'] = 'Tasks/create_comment/$1';
-$route['tasks/comments-get'] = 'Tasks/get_comment';
+$route['tasks/(:num)/comments-get'] = 'Tasks/get_comment/$1';
+$route['tasks/comments-get'] = 'Tasks/get_comments';
 
 

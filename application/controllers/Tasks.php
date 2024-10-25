@@ -120,40 +120,113 @@ class Tasks extends CI_Controller
     }
 
 
-    // public function get($id)
-    // { 
-    //     // Dapat data menggunakan task_id
-    //     $task = $this->Mtask->get($id);
+    public function get($id)
+    {
+        // Dapat data menggunakan task_id
+        $task = $this->Mtask->get($id);
 
-    //     if ($task) { // Kondisi ketika task ditemukan dan deadline_status di tambahkan
-    //         $today = date('Y-m-d');
-    //         $deadline = $task['deadline'];
+        if ($task) { // Kondisi ketika task ditemukan dan deadline_status di tambahkan
+            $today = date('Y-m-d');
+            $deadline = $task['deadline'];
 
-    //         if ($today < $deadline) {
-    //             $deadline_status = 'Tepat Waktu';
-    //         } elseif ($today == $deadline) {
-    //             $deadline_status = 'Hari Deadline';
-    //         } else {
-    //             $deadline_status = 'Telat';
-    //         }
+            if ($today < $deadline) {
+                $deadline_status = 'Tepat Waktu';
+            } elseif ($today == $deadline) {
+                $deadline_status = 'Hari Deadline';
+            } else {
+                $deadline_status = 'Telat';
+            }
 
-    //         // Tambahkan deadline_status ke dalam data task
-    //         $task['deadline_status'] = $deadline_status;
+            // Tambahkan deadline_status ke dalam data task
+            $task['deadline_status'] = $deadline_status;
 
-    //         $this->output->set_content_type('application/json')->set_output(json_encode([
-    //             'Status' => 'Success',
-    //             'Message' => 'Task Berhasil Ditemukan',
-    //             'Data' => $task
-    //         ]));
-    //     } else { // Kondisi ketika task tidak ditemukan
-    //         $this->output->set_content_type('application/json')->set_output(json_encode([
-    //             'Status' => 'Success',
-    //             'Message' => 'Task Tidak Ditemukan'
-    //         ]));
-    //     }
-    // }
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Task Berhasil Ditemukan',
+                'Data' => [
+                    'task_id' => $task['task_id'],
+                    'user_id' => $task['user_id'],
+                    'title' => $task['title'],
+                    'description' => $task['description'],
+                    'status_task' => $task['status'],
+                    'deadline' => $task['deadline'],
+                    'deadline_status' => $task['deadline_status'],
+                    'created_at' => $task['created_at'],
+                    'updated_at' => $task['updated_at']
+                ]
+            ]));
+        } else { // Kondisi ketika task tidak ditemukan
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Task Tidak Ditemukan'
+            ]));
+        }
+    }
 
-    public function get()
+    public function getFilter($id)
+    {
+        $user = $this->Mtask->getUserid($id);
+        if ($user) {
+            // Parameter
+            $filters = [
+                'user_id' => $id,
+                'title' => $this->input->get('title'),
+                'description' => $this->input->get('description'),
+                'status' => $this->input->get('status'),
+                'deadline_from' => $this->input->get('deadline_from'),
+                'deadline_to' => $this->input->get('deadline_to'),
+                'created_at' => $this->input->get('created_at')
+            ];
+
+            $tasks = $this->Mtask->getFilter($filters);
+
+            if ($tasks) {
+                foreach ($tasks as &$task) { // Kondisi deadline 
+                    $today = date('Y-m-d');
+                    $deadline = $task['deadline'];
+
+                    if ($today < $deadline) {
+                        $task['deadline_status'] = 'Tepat Waktu';
+                    } elseif ($today == $deadline) {
+                        $task['deadline_status'] = 'Hari Deadline';
+                    } else {
+                        $task['deadline_status'] = 'Telat';
+                    }
+
+                    // unset($task['deadline']); // Menghapus field deadline
+
+                    $tasks_json[] = [
+                        'task_id' => $task['task_id'],
+                        'user_id' => $task['user_id'],
+                        'title' => $task['title'],
+                        'description' => $task['description'],
+                        'status_task' => $task['status'],
+                        'deadline' => $task['deadline'],
+                        'deadline_status' => $task['deadline_status'],
+                        'created_at' => $task['created_at'],
+                        'updated_at' => $task['updated_at']
+                    ];
+                }
+
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Tasks Berhasil Ditemukan',
+                    'Data' => $tasks_json
+                ]));
+            } else {
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Tasks Tidak Ditemukan'
+                ]));
+            }
+        } else {
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'Tasks Tidak Ditemukan'
+            ]));
+        }
+    }
+    public function getAllFilter()
     {
         // Parameter
         $filters = [
@@ -208,52 +281,53 @@ class Tasks extends CI_Controller
         }
     }
 
-    public function getParamUserId()
-    {
-        // Parameter
-        $user_id = $this->input->get('user_id');
-        if ($user_id) {
-            $user = $this->Mtask->getUserid($user_id);
-            if ($user) { // Kondisi ketika user_id ditemukan
-                $filter = [];
-                foreach ($user as $users) {
-                    $today = date('Y-m-d');
-                    $deadline = $users['deadline'];
 
-                    if ($today < $deadline) {
-                        $users['deadline_status'] = 'Tepat Waktu';
-                    } elseif ($today == $deadline) {
-                        $users['deadline_status'] = 'Hari Deadline';
-                    } else {
-                        $users['deadline_status'] = 'Telat';
-                    }
-                    
-                    $filter[] = [
-                        'task_id' => $users['task_id'],
-                        'user_id' => $users['user_id'],
-                        'title' => $users['title'],
-                        'description' => $users['description'],
-                        'status_task' => $users['status'],
-                        'deadline' => $users['deadline'],
-                        'deadline_status' => $users['deadline_status'],
-                        'created_at' => $users['created_at'],
-                        'updated_at' => $users['updated_at']
-                    ];
-                }
+    // public function getParamUserId()
+    // {
+    //     // Parameter
+    //     $user_id = $this->input->get('user_id');
+    //     if ($user_id) {
+    //         $user = $this->Mtask->getUserid($user_id);
+    //         if ($user) { // Kondisi ketika user_id ditemukan
+    //             $filter = [];
+    //             foreach ($user as $users) {
+    //                 $today = date('Y-m-d');
+    //                 $deadline = $users['deadline'];
 
-                $this->output->set_content_type('application/json')->set_output(json_encode([
-                    'Status' => 'Success',
-                    'Message' => 'Task Berhasil Ditemukan',
-                    'Data' => $filter
-                ]));
-            } else { // Kondisi ketika user tidak ditemukan
-                $this->output->set_content_type('application/json')->set_output(json_encode([
-                    'Status' => 'Error',
-                    'Message' => 'Task Tidak Ditemukan'
-                ]));
-            }
-        }
-    }
+    //                 if ($today < $deadline) {
+    //                     $users['deadline_status'] = 'Tepat Waktu';
+    //                 } elseif ($today == $deadline) {
+    //                     $users['deadline_status'] = 'Hari Deadline';
+    //                 } else {
+    //                     $users['deadline_status'] = 'Telat';
+    //                 }
+
+    //                 $filter[] = [
+    //                     'task_id' => $users['task_id'],
+    //                     'user_id' => $users['user_id'],
+    //                     'title' => $users['title'],
+    //                     'description' => $users['description'],
+    //                     'status_task' => $users['status'],
+    //                     'deadline' => $users['deadline'],
+    //                     'deadline_status' => $users['deadline_status'],
+    //                     'created_at' => $users['created_at'],
+    //                     'updated_at' => $users['updated_at']
+    //                 ];
+    //             }
+
+    //             $this->output->set_content_type('application/json')->set_output(json_encode([
+    //                 'Status' => 'Success',
+    //                 'Message' => 'Task Berhasil Ditemukan',
+    //                 'Data' => $filter
+    //             ]));
+    //         } else { // Kondisi ketika user tidak ditemukan
+    //             $this->output->set_content_type('application/json')->set_output(json_encode([
+    //                 'Status' => 'Error',
+    //                 'Message' => 'Task Tidak Ditemukan'
+    //             ]));
+    //         }
+    //     }
+    // }
 
     public function update($id)
     {
@@ -423,7 +497,54 @@ class Tasks extends CI_Controller
     //             'Message' => 'Comments Tidak Ditemukan']));
     // }
     // }
-    public function get_comment()
+    public function get_comment($id)
+    {
+        $task = $this->Mcomment->get($id);
+        if ($task) {
+            // Parameter
+            $filters = [
+                'task_id' => $id,
+                'user_id' => $this->input->get('user_id'),
+                'username' => $this->input->get('username'),
+                'name' => $this->input->get('name'),
+                'comment' => $this->input->get('comment')
+            ];
+
+            $comments = $this->Mcomment->getFilter($filters);
+            if (!empty($comments)) {
+                $comment = [];
+                foreach ($comments as $comment) {
+                    $comment_json[] = [
+                        'comment_id' => $comment['comment_id'],
+                        'task_id' => $comment['task_id'],
+                        'user_id' => $comment['user_id'],
+                        'name' => $comment['name'],
+                        'username' => $comment['username'],
+                        'comment' => $comment['comment'],
+                        'created_at' => $comment['created_at']
+                    ];
+                }
+
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Comments Berhasil Ditemukan',
+                    'Data' => $comment_json
+                ]));
+            } else {
+                $this->output->set_content_type('application/json')->set_output(json_encode([
+                    'Status' => 'Success',
+                    'Message' => 'Comments Tidak Ditemukan'
+                ]));
+            }
+        } else { // Kondisi ketika task tidak ditemukan
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'Status' => 'Error',
+                    'Message' => 'Comments Tidak Ditemukan'
+                ]));
+        }
+    }
+    public function get_comments()
     {
         // Parameter
         $filters = [
@@ -433,7 +554,7 @@ class Tasks extends CI_Controller
             'comment' => $this->input->get('comment')
         ];
 
-        $comments = $this->Mcomment->get($filters);
+        $comments = $this->Mcomment->getFilter($filters);
         if (!empty($comments)) {
             $comment = [];
             foreach ($comments as $comment) {
@@ -460,5 +581,4 @@ class Tasks extends CI_Controller
             ]));
         }
     }
-
 }

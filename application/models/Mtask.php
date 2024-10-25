@@ -21,6 +21,10 @@ class Mtask extends CI_Model {
     {
         $this->db->select('*');
         $this->db->from('tasks');
+
+        if (!empty($filters['user_id'])) {
+            $this->db->where('user_id', $filters['user_id']);
+        }
     
         if (!empty($filters['title'])) {
             $this->db->like('title', $filters['title']);

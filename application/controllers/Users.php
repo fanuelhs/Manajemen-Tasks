@@ -255,38 +255,45 @@ class Users extends CI_Controller
             }
         }
     }
-    // public function get($id)
-    // {
-    //     // Dapat data menggunakan user_id
-    //     $user = $this->Muser->get($id);
-    //     if ($user) { // Kondisi ketika user ditemukan
-    //         $filter = [
-    //             'user_id' => $user['user_id'],
-    //             'username' => $user['username'],
-    //             'email' => $user['email'],
-    //             'password' => $user['password'],
-    //             'created_at' => $user['created_at']
-    //         ];
+    public function get($id)
+    {
+        // Dapat data menggunakan user_id
+        $user = $this->Muser->get($id);
+        if ($user) { // Kondisi ketika user ditemukan
+            $filter = [
+                'user_id' => $user['user_id'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'password' => $user['password'],
+                'created_at' => $user['created_at']
+            ];
 
-    //         $this->output->set_content_type('application/json')->set_output(json_encode([
-    //             'Status' => 'Success',
-    //             'Message' => 'User Berhasil Ditemukan',
-    //             'Data' => $user
-    //         ]));
-    //     } else { // Kondisi ketika user tidak ditemukan
-    //         $this->output->set_content_type('application/json')->set_output(json_encode([
-    //             'Status' => 'Error',
-    //             'Message' => 'User Tidak Ditemukan'
-    //         ]));
-    //     }
-    // }
-    public function get()
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Success',
+                'Message' => 'User Berhasil Ditemukan',
+                'Data' => [
+                    'user_id' => $user['user_id'],
+                    'name' => $user['firstname'] . ' ' . $user['lastname'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'password' => $user['password'],
+                    'created_at' => $user['created_at']
+                ]
+            ]));
+        } else { // Kondisi ketika user tidak ditemukan
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'Status' => 'Error',
+                'Message' => 'User Tidak Ditemukan'
+            ]));
+        }
+    }
+    public function getFilter()
     {
         // Parameter
         $filter = [
-            'email' => $this->input->get('email'),      
+            'email' => $this->input->get('email'),
             'username' => $this->input->get('username'),
-            'name' => $this->input->get('name')         
+            'name' => $this->input->get('name')
         ];
 
         $users = $this->Muser->getFilter($filter);
